@@ -1,17 +1,72 @@
 syntax:
   signatures:
-    - jam.prototype(options)
-    - jam.prototype(proto, options)
+    - jam.prototype(blueprint)
 
   returns: Function
   parameters:
     options: An object that has several optional properties.
 
-aliases:
-  - lol
-  - testing
-  - stuff
-synopsis: Generates a constructor function with which to instantiate objects
+synopsis: Generates a constructor function that returns a new instance of the specified prototype.
+
+usage: |
+  `jam.prototype()` takes an object (`blueprint`) that defines how the prototype will be implemented.
+  
+  `blueprint.constructor` is a function whose parameters are the arguments given on instantiation. If
+  this prototype has a superclass, the first parameter is a reference to the superclass'
+  constructor function, so base classes may be correctly constructed. This function does not need
+  to return `this` - any return value is ignored. `constructor` is optional.
+
+
+  ``` javascript
+  var Dragon = jam.prototype({
+    constructor: function(name, age) {
+      this.name = name;
+      this.age = age;
+    }
+  });
+
+  var henry = Dragon("Henry", 21);
+  // 'new' is optional, but allowed
+  var oliver = new Dragon("Oliver", 27);
+  ```
+
+  `blueprint.methods` is a map, where each key is the name of a method to be defined upon the
+  prototype. Each value is the method definition. Method names beginning with an underscore are
+  considered "private", and are created as non-enumerable, non-writable, and non-configurable. Of
+  course, there is no such thing as encapsulation in JavaScript, so users can still call these
+  methods. But we hope they don't.
+
+  ``` javascript
+  var Dragon = jam.prototype({
+    methods: {
+      roar: function() {
+        console.log("RAWR");
+      },
+
+      _complain: function() {
+        console.log("Roaring like that hurts my throat");
+      }
+    }
+  });
+
+  var mortimer = Dragon();
+  mortimer.roar();
+  ```
+
+
+  Methods and members defined upon `options.protics` is a map, whose keys will be the names of properties defined in the prototype, the 
+  definition of which is the correspondant value. Usual things to put here are functions that 
+  all instances of the prototype should share, as well as any shared data. All properties are 
+  defined using `Object.defineProperty()`. This allows us to define properties with a leading underscore
+  (eg, `_ie_fix()`), as non-enumerable. All properties are non-configurable and non-writable.
+  
+  `options.statics` is map whose keys are the names of properties to be added to the class directly.
+  Methods such as `Array.isArray` are examples of statics - `isArray` is not
+  defined in the prototype, and thus instances of Array do not have it availble as a member.
+  
+  `options.datas`: a map whose keys are the names of properties that will be defined per-instance.
+  These are data values, and whilst will be dynamically added afresh for each instantiation
+
 overview: |
   `jam.prototype()` is a utility function, designed to ease and facilitate the creation of object
   prototypes. It allows the definition of properties upon the prototype, the class itself, a
@@ -137,22 +192,7 @@ overview: |
   Descriptors 
 
   
-usage: |
-  `jam.prototype()` takes a structure (`options`) that defines what properties will be added where,
-  and how.
-  
-  Methods and members defined upon `options.protics` is a map, whose keys will be the names of properties defined in the prototype, the 
-  definition of which is the correspondant value. Usual things to put here are functions that 
-  all instances of the prototype should share, as well as any shared data. All properties are 
-  defined using `Object.defineProperty()`. This allows us to define properties with a leading underscore
-  (eg, `_ie_fix()`), as non-enumerable. All properties are non-configurable and non-writable.
-  
-  `options.statics` is map whose keys are the names of properties to be added to the class directly.
-  Methods such as `Array.isArray` are examples of statics - `isArray` is not
-  defined in the prototype, and thus instances of Array do not have it availble as a member.
-  
-  `options.datas`: a map whose keys are the names of properties that will be defined per-instance.
-  These are data values, and whilst will be dynamically added afresh for each instantiation
+
 
 examples:
   first: |

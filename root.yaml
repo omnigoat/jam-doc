@@ -7,10 +7,10 @@ overview: |
   the standard library, are not present in older versions of the standard library, or are
   extensions of (but compatible with) functions present in the standard library. Jam's goals
   are to be a fundamental library on which to build your web applications, or indeed own
-  libraries. To that end, jam attempts not to pollute the global namespace with many names,
+  libraries. To that end, Jam attempts not to pollute the global namespace with many names,
   and any such pollution is controllable.
 
   Above all else, Jam attempts to implement a best-standards approach to defining prototypes.
   Javascript is, after all, a prototype-based language. `jam.prototype()` is significantly
   better than its competitors, because it doesn't try and shoehorn Javascript into something
-  it's not. 
+  it's not.
