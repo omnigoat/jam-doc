@@ -5,9 +5,9 @@ syntax:
   returns: Function
   parameters:
     fn: The function we are going to curry
-    a1 through aN: |
-    	A //directive//, consisting of either a non-undefined value, a numbered placeholder, or a
-    	non-numbered placeholder.
+    "a1 through aN": |
+      A //directive//, consisting of either a non-undefined value, a numbered placeholder, or a
+      non-numbered placeholder.
 
 synopsis: Curries a function
 
@@ -24,8 +24,8 @@ overview: |
   `jam.curry`, in its simplest form, uses only non-numbered placeholders. A non-numbered placeholder
   is by default an underscore (`_`), defined in the global namespace. This is configurable, as
   some libraries use the underscore as the entry point to their API (in this author's opition, a
- 	terrible idea). Configuration is detailed later in this article. The following demonstrates the
-	use of non-numbered placeholders (using the default underscore):
+  terrible idea). Configuration is detailed later in this article. The following demonstrates the
+  use of non-numbered placeholders (using the default underscore):
 
   ``` javascript
   function sub_x_y(x, y) { return x - y; }
@@ -53,16 +53,16 @@ overview: |
 
   ``` javascript
   function sum_everything() {
-  	var result = 0;
-  	Array.prototype.forEach.call(arguments, function(x) {
-  		result += x;
-  	});
-		return result;
-	}
+    var result = 0;
+    Array.prototype.forEach.call(arguments, function(x) {
+      result += x;
+    });
+    return result;
+  }
 
-	var sum_everything_and_12 = jam.curry(sum_everything, 1212
+  var sum_everything_and_12 = jam.curry(sum_everything, 1212
 
-	sum_everything_and_12(1, 2, 3, 4); // equals 22
+  sum_everything_and_12(1, 2, 3, 4); // equals 22
   ```
 
   ## numbered placeholders
@@ -87,6 +87,6 @@ overview: |
   are appended to the function call (as explained above).
   `jam.curry(fn, _1, _4, _2)` is ill-defined, and just weird. What happened to parameter 3? We can
   not tell whether or not to append it or ignore it, and so we just throw an error.
-  
+
   One strict limitation of using numbered placeholders is that //their use is not allowed after the
   use of non-numbered placeholders//. 
