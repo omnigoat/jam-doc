@@ -4,13 +4,15 @@ syntax:
 
   returns: Function
   parameters:
-    options: An object that has several optional properties.
+    blueprint: An object that has several optional properties.
 
 synopsis: Generates a constructor function that returns a new instance of the specified prototype.
 
-usage: |
+overview: |
   `jam.prototype()` takes an object (`blueprint`) that defines how the prototype will be implemented.
   
+  ## constructor function
+
   `blueprint.constructor` is a function whose parameters are the arguments given on instantiation. If
   this prototype has a superclass, the first parameter is a reference to the superclass'
   constructor function, so base classes may be correctly constructed. This function does not need
@@ -29,6 +31,8 @@ usage: |
   // 'new' is optional, but allowed
   var oliver = new Dragon("Oliver", 27);
   ```
+
+  ## methods
 
   `blueprint.methods` is a map, where each key is the name of a method to be defined upon the
   prototype. Each value is the method definition. Method names beginning with an underscore are
@@ -53,153 +57,6 @@ usage: |
   mortimer.roar();
   ```
 
-
-  Methods and members defined upon `options.protics` is a map, whose keys will be the names of properties defined in the prototype, the 
-  definition of which is the correspondant value. Usual things to put here are functions that 
-  all instances of the prototype should share, as well as any shared data. All properties are 
-  defined using `Object.defineProperty()`. This allows us to define properties with a leading underscore
-  (eg, `_ie_fix()`), as non-enumerable. All properties are non-configurable and non-writable.
-  
-  `options.statics` is map whose keys are the names of properties to be added to the class directly.
-  Methods such as `Array.isArray` are examples of statics - `isArray` is not
-  defined in the prototype, and thus instances of Array do not have it availble as a member.
-  
-  `options.datas`: a map whose keys are the names of properties that will be defined per-instance.
-  These are data values, and whilst will be dynamically added afresh for each instantiation
-
-overview: |
-  `jam.prototype()` is a utility function, designed to ease and facilitate the creation of object
-  prototypes. It allows the definition of properties upon the prototype, the class itself, a
-  method of prototype-based inheritance, and more.
-  
-  ## prototypical programming 101
-  Let's look at creating a simple type:
-  
-  ``` javascript
-  var Dragon = function(name, age) {
-    this.name = name;
-    this.age = age;
-  }
-  
-  var henry = new Dragon("Henry", 21);
-  ```
-  
-  `Dragon` is a constructor function. We call it with `new`, which sets the `this` context to a
-  brand new object. It also sets the object's prototype to that of the function. Here, `henry`'s
-  prototype is that of `Dragon`'s. Anything we define upon `Dragon.prototype` will be reflected
-  in `henry`'s prototype. Thus, if we want to add a method:
-  
-  ``` javascript
-  Dragon.prototype.swoop = function() {
-    console.log(this.name + " at age " + this.age +
-      " is still swooping like a banshee!");
-  }
-  
-  // outputs "Henry at age 21 is still swooping like a banshee!"
-  henry.swoop(); 
-  ```
-  
-  Bam! Henry now possesses `.swoop()`! In actuality, javascript notices Henry doesn't have
-  `.swoop()`, and looks towards `henry`'s prototype for help. If it finds `.swoop()` in the prototype,
-  everything is gravy. If not, it throws an undefined property error. Fantastically, instances of
-  Dragon that were instantiated before the function was added to `Dragon.prototype` will _still_
-  be directed correctly, just like above. This is because Henry's prototype is really just a
-  _reference_ to `Dragon.prototype`.
-  
-  ``` javascript
-  var oliver = new Dragon("Oliver", 33);
-  
-  // outputs "Oliver at age 33 is still swooping like a banshee!"
-  oliver.swoop();
-  ```
-  
-  ## prototypical programming 102: upon the class
-  What if we want to group swoop? Where would we put this function?
-  
-  ``` javascript
-  function group_swoop() {
-    // if this line confuses you, I encourage you to read up on the
-    // arguments object, the `call` inbuilt function, and then re-read
-    // the section above
-    var dragons = Array.prototype.slice.call(arguments);
-    
-    dragons.forEach(function(dragon) {
-      dragon.swoop();
-    });
-  }
-  
-  // outputs:
-  //  Oliver at age 33 is still swooping like a banshee!
-  //  Henry at age 21 is still swooping like a banshee!
-  group_swoop(oliver, henry);
-  ```
-  Notice two things: One, this function takes a variable number of arguments (dragons), and two,
-  defining it on `Dragon.prototype` wouldn't make much sense. Calling
-  `henry.group_swoop(henry, oliver)` is a bit ridiculous. This function might even seem to be a
-  great candidate for just leaving alone. But having functions floating around is bad, especially
-  when we actually such an excellent place to put it: The class itself! It's a logical place to
-  keep it, as it is a function that solely has to do with dragons!
-  
-  ``` javascript
-  Dragon.group_swoop = function() {
-    ...
-  }
-  
-  // same output as before, but now in a logical place!
-  Dragon.group_swoop(oliver, henry);
-  
-  // this will cause an error! .group_swoop() is not a member of Dragon.prototype!
-  oliver.group_swoop(oliver, henry);
-  ```
-  
-  ## metaprogramming and you
-  
-  Javascript 1.8.5 introduced some new methods for defining and modifying properties of objects.
-  The one we want to look at is <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/defineProperty">
-  `Object.defineProperty()`</a>. As straightforward as the name is, the
-  power of this function is vastly greater than defining properties the usual way. We use this
-  function when defining a property the usual way isn't sufficient. Otherwise it's just excess
-  verbosity. Which is probably a word.
-  
-  ``` javascript
-  Object.defineProperty(Dragon.prototype, "_itch",
-    value: function() {
-      console.log(this.name + " is scratching an itch");
-    }
-  });
-  ```
-  
-  We just defined a new property on `Dragon.prototype`. It starts with an underscore to signify
-  that it is an internal function, and shouldn't be called directly (i.e: `henry._itch()`).
-  Just a javascript convention. However, this is _not_ identical to just defining it the
-  old-fashioned way. `Object.defineProperty()` takes more fields in its final argument than just
-  `value`. To control mutation and viewability of the property, `Object.defineProperty()` also
-  accepts fields `configurable`, `enumerable`, and `writable`.
-  
-  To quickly surmise the linked documentation, `enumerable` is false by default, meaning the
-  property won't show whilst enumerating properties of the object (such as `for .. in` loops).
-  `configurable` defaults to false, which means we can not redefine the type of this property, nor
-  delete it! `writable` defaults to false, which means we can not change the value of `_itch`,
-  period. Nada. This is great for our "private" methods, as they shouldn't be enumeratable. If
-  they're not meant to be called, all the better for programmers to not have to mask them out
-  when iterating through our callable methods.
-  
-  ## accessors and mutators oh my!
-  
-  If you've glanced at the linked documentation, you'll have seen that instead of using `value`
-  in `Object.defineProperty()`, we could have used `get` and/or `set`. This is a completely
-  new way of _thing_ in Javascript 1.8.5; it is called an _accessor descriptor_. Accessor
-  Descriptors 
+  ## accessors
 
   
-
-
-examples:
-  first: |
-    ``` javascript
-    jam.prototype({
-      __init__: function() {
-        console.log("in the initialiser");
-      }
-    });
-    ```
