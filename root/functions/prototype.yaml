@@ -59,5 +59,37 @@ overview: |
 
   ## accessors
 
-  Javascript 1.5 introduced accessors. `jam.prototype` 
+  Javascript 1.8.5 introduced accessors.
+  <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/defineProperty>
+  `Object.defineProperty`</a> can be used to create both  _data descriptors_ and _accessor _descriptors_.
+  `blueprint.accessors` creates accessor descriptors: The key is the name of the properties to create, and the
+  value helps specify the accessor(s). Entires in `blueprint.accessors` can take two forms: A `simple` form, and
+  a `complete` form. The simple form is a Function. This represents an accessor with only a `get` function (the
+  majority of accessors). The complete form is an object that has both `get` and `set` properties.
+
+  ``` javascript
+  var Dragon = jam.prototype({
+
+    constructor: function(name, hitpoints) {
+      this._name = name;
+      this._hitpoints = hitpoints;
+    },
+
+    accessors: {
+      // simple form.
+      // an accessor for an internal member
+      name: function() { return this._name; }
+
+      // complete form.
+      // an accessor with a basic getter, and with a
+      // setter that ensures the hitpoints don't go below zero.
+      hitpoints: {
+        get: function() { return this._hitpoints; }
+        set: function(value) {
+          this._hitpoints = Math.max(0, value);
+        }
+      }
+    }
+  });
+  ```
 

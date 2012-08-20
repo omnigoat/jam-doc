@@ -6,7 +6,7 @@ syntax:
   parameters:
     fn: The function we are going to curry
     "a1 through aN": |
-      A //directive//, consisting of either a non-undefined value, a numbered placeholder, or a
+      A _directive_, consisting of either a non-undefined value, a numbered placeholder, or a
       non-numbered placeholder.
 
 synopsis: Curries a function
@@ -14,9 +14,9 @@ synopsis: Curries a function
 usage: |
   The first parameter is the function you wish to curry.
 
-  All subsequent parameters are one of the following: A numbered placeholder (`_1`, `_2`, etc), a
-  non-numbered placeholder (`_`), or any non-undefined value. This bears repeating - `jam.curry`
-  does **not** play nice with `undefined` as arguments.
+  All subsequent parameters are considered _directives_: A numbered placeholder (`_1`, `_2`, etc),
+  a non-numbered placeholder (`_`), or any non-undefined value. This bears repeating - `jam.curry`
+  does _not_ play nice with `undefined` as arguments.
 
 overview: |
   ## non-numbered placeholders
@@ -60,7 +60,7 @@ overview: |
     return result;
   }
 
-  var sum_everything_and_12 = jam.curry(sum_everything, 1212
+  var sum_everything_and_12 = jam.curry(sum_everything, 12)
 
   sum_everything_and_12(1, 2, 3, 4); // equals 22
   ```
@@ -82,11 +82,13 @@ overview: |
   reversed_predicate(1, 2); // false
   ```
 
-  The first limitation of numbered placeholders is that they must be contiguous. That is to say, you
-  can't skip a number. This is a logical limitation, due to the fact that all non-consumed arguments
-  are appended to the function call (as explained above).
-  `jam.curry(fn, _1, _4, _2)` is ill-defined, and just weird. What happened to parameter 3? We can
-  not tell whether or not to append it or ignore it, and so we just throw an error.
+  The first limitation of numbered placeholders is that they must be contiguous as a whole.
+  That is to say, you can't skip a number within all the numbered placeholders. This is a logical
+  limitation, due to the aforementioned fact that all non-consumed arguments are appended to the
+  function call. `jam.curry(fn, _1, _4, _2)` is ill-defined: We can not tell whether or not to append
+  the third parameter or ignore it, and so an error is born. To clarify, `jam.curry(fn, _1, _3, _2)`
+  is totally fine. `_1` to `_3` may not be contiguous, but as a _whole_, it is not missing any numbers.
 
-  One strict limitation of using numbered placeholders is that //their use is not allowed after the
-  use of non-numbered placeholders//. 
+  The other strict limitation of using numbered placeholders is that their use is not allowed after
+  the use of non-numbered placeholders. However, non-numbered placeholders are allowed afterwards.
+  `jam.curry(fn, _3, "elephant", _1, _2, _, _, "giraffe")` is a valid use of `jam.curry`.
