@@ -60,7 +60,7 @@ overview: |
   ## accessors
 
   Javascript 1.8.5 introduced accessors.
-  <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/defineProperty>
+  <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/defineProperty">
   `Object.defineProperty`</a> can be used to create both  _data descriptors_ and _accessor _descriptors_.
   `blueprint.accessors` creates accessor descriptors: The key is the name of the properties to create, and the
   value helps specify the accessor(s). Entires in `blueprint.accessors` can take two forms: A `simple` form, and
