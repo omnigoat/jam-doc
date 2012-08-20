@@ -1,0 +1,92 @@
+syntax:
+  signatures:
+    - jam.curry(fn, a1, a2, ... aN)
+
+  returns: Function
+  parameters:
+    fn: The function we are going to curry
+    a1 through aN: |
+    	A //directive//, consisting of either a non-undefined value, a numbered placeholder, or a
+    	non-numbered placeholder.
+
+synopsis: Curries a function
+
+usage: |
+  The first parameter is the function you wish to curry.
+
+  All subsequent parameters are one of the following: A numbered placeholder (`_1`, `_2`, etc), a
+  non-numbered placeholder (`_`), or any non-undefined value. This bears repeating - `jam.curry`
+  does **not** play nice with `undefined` as arguments.
+
+overview: |
+  ## non-numbered placeholders
+
+  `jam.curry`, in its simplest form, uses only non-numbered placeholders. A non-numbered placeholder
+  is by default an underscore (`_`), defined in the global namespace. This is configurable, as
+  some libraries use the underscore as the entry point to their API (in this author's opition, a
+ 	terrible idea). Configuration is detailed later in this article. The following demonstrates the
+	use of non-numbered placeholders (using the default underscore):
+
+  ``` javascript
+  function sub_x_y(x, y) { return x - y; }
+
+  // curry
+  var sub_x_1 = jam.curry(sub_x_y, _, 1);
+
+  sub_x_1(4); // equals 3
+  ```
+
+  Furthermore, trailing non-numbered placeholders can simply be truncated:
+
+  ``` javascript
+  // trailing non-numbered placeholder
+  var sub_8_y = jam.curry(sub_x_y, 8, _);
+
+  // truncated, same as previous line
+  sub_8_y = jam.curry(sub_x_y, 8);
+
+  sub_8_y(2); // equals 6
+  ```
+
+  Finally, function calls that take a variable number of parameters work, as all non-consumed arguments
+  are appended to the end:
+
+  ``` javascript
+  function sum_everything() {
+  	var result = 0;
+  	Array.prototype.forEach.call(arguments, function(x) {
+  		result += x;
+  	});
+		return result;
+	}
+
+	var sum_everything_and_12 = jam.curry(sum_everything, 1212
+
+	sum_everything_and_12(1, 2, 3, 4); // equals 22
+  ```
+
+  ## numbered placeholders
+
+  A numbered placeholder is a variable, defined in the global scope, of type `jam.placeholder`. It
+  takes the form of an underscore followed by a number, like `_1`, `_2`, `_3`, etc. Numbered
+  placeholders allow us to change the order that arguments are passed to the curried function. It's
+  especially helpful to reverse predicates:
+
+  ``` javascript
+  function predicate(lhs, rhs) { return lhs < rhs; }
+  var reversed_predicate = jam.curry(predicate, _2, _1);
+
+  predicate(1, 2); // true
+  predicate(2, 1); // false
+  reversed_predicate(2, 1); // true
+  reversed_predicate(1, 2); // false
+  ```
+
+  The first limitation of numbered placeholders is that they must be contiguous. That is to say, you
+  can't skip a number. This is a logical limitation, due to the fact that all non-consumed arguments
+  are appended to the function call (as explained above).
+  `jam.curry(fn, _1, _4, _2)` is ill-defined, and just weird. What happened to parameter 3? We can
+  not tell whether or not to append it or ignore it, and so we just throw an error.
+  
+  One strict limitation of using numbered placeholders is that //their use is not allowed after the
+  use of non-numbered placeholders//. 

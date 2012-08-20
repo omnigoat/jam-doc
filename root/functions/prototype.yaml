@@ -59,4 +59,5 @@ overview: |
 
   ## accessors
 
-  
+  Javascript 1.5 introduced accessors. `jam.prototype` 
+
