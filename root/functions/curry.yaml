@@ -1,7 +1,4 @@
 syntax:
-  signatures:
-    - jam.curry(fn, a1, a2, ... aN)
-
   returns: Function
   parameters:
     fn: The function we are going to curry
