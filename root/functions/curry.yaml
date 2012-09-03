@@ -5,9 +5,12 @@ syntax:
   returns: Function
   parameters:
     fn: The function we are going to curry
-    "a1 through aN": |
-      A _directive_, consisting of either a non-undefined value, a numbered placeholder, or a
-      non-numbered placeholder.
+
+    "a1 through aN":
+      display-name: a1, a2, ... aN
+      description: |
+        A _directive_, consisting of either a non-undefined value, a numbered placeholder, or a
+        non-numbered placeholder.
 
 synopsis: Curries a function
 
