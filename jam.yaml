@@ -1,3 +1,5 @@
+(template): javascript/module
+
 synopsis: |
   A Javascript library providing basic CS algorithms and data structures. The fundamentals
   of computing with an eye towards doing things The Javascript Way.

@@ -1,5 +1,0 @@
-template: javascript
-brief: CS101 implemented in Javascript.
-root:
-  type: module
-  name: jam
